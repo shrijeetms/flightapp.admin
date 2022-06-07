@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.flightapp.adminservice.Controller.PlaceRequest;
 import com.flightapp.adminservice.Entity.Flight;
 import com.flightapp.adminservice.Repo.FlightRepository;
+import com.flightapp.adminservice.exception.ScheduledFlightNotFoundException;
 
 
 
@@ -25,18 +26,24 @@ public class FlightService {
 	
 	public Optional<Flight> getFlightsbyId(Integer flightid) {
 		// TODO Auto-generated method stub
-		return repo.findById(flightid);
+		if (repo.findById(flightid)==null) {
+			throw new ScheduledFlightNotFoundException("Flight Not Avaiable");
+		}
+		else {
+			return repo.findById(flightid);
+		}
 	}
-	
-	
-//	 public Iterable<Flight> getAllFlightbyDate(Flight theflight)
-//	 {
-//		return repo.findAllByDate(theflight.getStarttime(),theflight.getEndtime());
-//	 }
-	 
+
 	 public Iterable<Flight> getAllFlightbyPlace(PlaceRequest theflight)
 	 {
-		return repo.findAllByPlace(theflight.getStartplace(),theflight.getEndplace());
+		
+		if (repo.findAllByPlace(theflight.getStartplace(),theflight.getEndplace())==null) {
+			throw new ScheduledFlightNotFoundException("Flight Not Avaiable");
+		}
+		else {
+			return repo.findAllByPlace(theflight.getStartplace(),theflight.getEndplace());
+		}
+		
 	 }
 
 	 
@@ -49,10 +56,12 @@ public class FlightService {
 		repo.save(updateFlight);
 		
 	}
-
-
 	public void deleteFlightById(Integer id) {
-		// TODO Auto-generated method stub
+		try {
 		repo.deleteById(id);
+		}
+		catch(Exception e) {
+			throw new ScheduledFlightNotFoundException("Flight Not Avaiable");
+		}
 	}
 }
